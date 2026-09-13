@@ -2,11 +2,11 @@ AgentHub — A production-style multi-agents AI platform with guardrails, evalua
 
 A production-style multi-agent AI system built for a fictional 10-person startup, **Nimbus Solutions**. Instead of one general-purpose chatbot, three specialist agents each handle a different job with a model suited to that job — all sitting behind a shared, hardened pipeline that enforces security, validation, and observability identically no matter which agent is called.
 
-## Why multi-agent, not one LLM
+ Why multi-agent, not one LLM
 
 A single generic LLM handling everything is the common student-project pattern. This project instead treats routing as an infrastructure problem: a request for "book a task" doesn't need the same model, latency budget, or trust level as a request that could delete data. Splitting agents by responsibility means each one can be tuned, evaluated, and secured independently — and the system can grow by adding agents, not by making one model do more things.
 
-## Architecture
+ Architecture
 Client (React dashboard)
 │ HTTPS + API key
 ▼
@@ -21,16 +21,18 @@ Orchestrator (LangGraph) ── routes by intent
 ▼
 
 ┌────────────┬──────────────────┬─────────────────┐
-▼ ▼ ▼
-Receptionist Competitor Watcher MCP Tool Agent
-(no LLM — (RAG: crawl → store (tool-calling +
-rules engine) → diff → summarize) human-approval gate)
+▼ ▼ 
+Receptionist  Competitor   Watcher MCP Tool Agent
+(no LLM — (RAG: crawl → store (tool-calling  +.    
+rules engine) →   diff →    summarize)   human-approval gate)
+
 │ │ │
 └────────────┴──────────────────┘
 ▼
 
 Output Guardrail ── PII redaction
 ▼
+
 SQLite ── employees · tasks · sites/snapshots · audit log · metrics · pipeline traces
 
 The three agents
