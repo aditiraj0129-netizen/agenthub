@@ -15,7 +15,7 @@ from app.db.database import get_db
 def save_snapshot(site_id: str, chunks: list[str], timestamp: str):
     with get_db() as conn:
         conn.executemany(
-            "INSERT INTO site_snapshots (site_id, chunk_text, snapshot_time) VALUES (?, ?, ?)",
+            "INSERT INTO site_snapshots (site_id, chunk_text, snapshot_time) VALUES (%s, %s, %s)",
             [(site_id, chunk, timestamp) for chunk in chunks],
         )
 
@@ -23,14 +23,14 @@ def save_snapshot(site_id: str, chunks: list[str], timestamp: str):
 def get_latest_two_snapshots(site_id: str) -> tuple[list[str], list[str]]:
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT DISTINCT snapshot_time FROM site_snapshots WHERE site_id = ? ORDER BY snapshot_time DESC LIMIT 2",
+            "SELECT DISTINCT snapshot_time FROM site_snapshots WHERE site_id = %s ORDER BY snapshot_time DESC LIMIT 2",
             (site_id,),
         ).fetchall()
 
         if len(rows) < 2:
             if len(rows) == 1:
                 current = conn.execute(
-                    "SELECT chunk_text FROM site_snapshots WHERE site_id = ? AND snapshot_time = ?",
+                    "SELECT chunk_text FROM site_snapshots WHERE site_id = %s AND snapshot_time = %s",
                     (site_id, rows[0]["snapshot_time"]),
                 ).fetchall()
                 return [], [r["chunk_text"] for r in current]
@@ -39,11 +39,11 @@ def get_latest_two_snapshots(site_id: str) -> tuple[list[str], list[str]]:
         latest_time, previous_time = rows[0]["snapshot_time"], rows[1]["snapshot_time"]
 
         current = conn.execute(
-            "SELECT chunk_text FROM site_snapshots WHERE site_id = ? AND snapshot_time = ?",
+            "SELECT chunk_text FROM site_snapshots WHERE site_id = %s AND snapshot_time = %s",
             (site_id, latest_time),
         ).fetchall()
         previous = conn.execute(
-            "SELECT chunk_text FROM site_snapshots WHERE site_id = ? AND snapshot_time = ?",
+            "SELECT chunk_text FROM site_snapshots WHERE site_id = %s AND snapshot_time = %s",
             (site_id, previous_time),
         ).fetchall()
 

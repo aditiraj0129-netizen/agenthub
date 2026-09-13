@@ -178,7 +178,7 @@ def trace_latest():
             return {"request_id": None, "stages": []}
         request_id = row["request_id"]
         stages = conn.execute(
-            "SELECT stage, detail, created_at FROM pipeline_trace WHERE request_id = ? ORDER BY id ASC",
+            "SELECT stage, detail, created_at FROM pipeline_trace WHERE request_id = %s ORDER BY id ASC",
             (request_id,),
         ).fetchall()
         return {"request_id": request_id, "stages": [dict(s) for s in stages]}
@@ -188,7 +188,7 @@ def trace_latest():
 def trace_by_id(request_id: str):
     with get_db() as conn:
         stages = conn.execute(
-            "SELECT stage, detail, created_at FROM pipeline_trace WHERE request_id = ? ORDER BY id ASC",
+            "SELECT stage, detail, created_at FROM pipeline_trace WHERE request_id = %s ORDER BY id ASC",
             (request_id,),
         ).fetchall()
         return {"request_id": request_id, "stages": [dict(s) for s in stages]}

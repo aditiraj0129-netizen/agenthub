@@ -22,7 +22,7 @@ def request_tool_call(tool_name: str, params: dict) -> dict:
         result = tool["fn"](**params)
         with get_db() as conn:
             conn.execute(
-                "INSERT INTO mcp_audit_log (tool, params, result, approved) VALUES (?, ?, ?, ?)",
+                "INSERT INTO mcp_audit_log (tool, params, result, approved) VALUES (%s, %s, %s, %s)",
                 (tool_name, json.dumps(params), str(result), "auto (read-only)"),
             )
         return {"status": "executed", "result": result}
@@ -54,7 +54,7 @@ def approve_call(approval_id: str, password: str = "") -> dict:
     result = tool["fn"](**pending["params"])
     with get_db() as conn:
         conn.execute(
-            "INSERT INTO mcp_audit_log (tool, params, result, approved) VALUES (?, ?, ?, ?)",
+            "INSERT INTO mcp_audit_log (tool, params, result, approved) VALUES (%s, %s, %s, %s)",
             (pending["tool"], json.dumps(pending["params"]), str(result), "human"),
         )
     return {"status": "executed", "result": result}
@@ -66,7 +66,7 @@ def reject_call(approval_id: str) -> dict:
     rejected = _pending.pop(approval_id)
     with get_db() as conn:
         conn.execute(
-            "INSERT INTO mcp_audit_log (tool, params, result, approved) VALUES (?, ?, ?, ?)",
+            "INSERT INTO mcp_audit_log (tool, params, result, approved) VALUES (%s, %s, %s, %s)",
             (rejected["tool"], json.dumps(rejected["params"]), None, "rejected"),
         )
     return {"status": "rejected"}

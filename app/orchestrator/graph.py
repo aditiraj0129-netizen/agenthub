@@ -24,7 +24,7 @@ from app.db.database import get_db
 def log_trace(request_id: str, user_input: str, stage: str, detail: str):
     with get_db() as conn:
         conn.execute(
-            "INSERT INTO pipeline_trace (request_id, user_input, stage, detail) VALUES (?, ?, ?, ?)",
+            "INSERT INTO pipeline_trace (request_id, user_input, stage, detail) VALUES (%s, %s, %s, %s)",
             (request_id, user_input, stage, detail),
         )
 

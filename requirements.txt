@@ -159,3 +159,4 @@ zstandard==0.25.0
 langchain-community<0.4.2
 ragas>=0.1.20
 torch>=2.4.1
+psycopg2-binary>=2.9.9

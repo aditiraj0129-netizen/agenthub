@@ -8,7 +8,7 @@ from app.db.database import get_db
 def log_call(agent: str, duration_ms: float, success: bool, was_blocked: bool = False):
     with get_db() as conn:
         conn.execute(
-            "INSERT INTO request_metrics (agent, duration_ms, success, was_blocked) VALUES (?, ?, ?, ?)",
+            "INSERT INTO request_metrics (agent, duration_ms, success, was_blocked) VALUES (%s, %s, %s, %s)",
             (agent, duration_ms, int(success), int(was_blocked)),
         )
 

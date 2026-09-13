@@ -54,11 +54,11 @@ def add_employee(name: str = "", department: str = "General", **kwargs) -> str:
 
     employee_id = "emp_" + re.sub(r"[^a-z0-9]", "", name.lower())[:12]
     with get_db() as conn:
-        existing = conn.execute("SELECT 1 FROM employees WHERE employee_id = ?", (employee_id,)).fetchone()
+        existing = conn.execute("SELECT 1 FROM employees WHERE employee_id = %s", (employee_id,)).fetchone()
         if existing:
             return f"An employee with a similar ID already exists ('{employee_id}')."
         conn.execute(
-            "INSERT INTO employees (employee_id, name, department, status, free_at) VALUES (?, ?, ?, 'free', NULL)",
+            "INSERT INTO employees (employee_id, name, department, status, free_at) VALUES (%s, %s, %s, 'free', NULL)",
             (employee_id, name, department),
         )
     return f"Added new team member: {name} ({department})"
@@ -72,8 +72,8 @@ def delete_employee(name: str = "", **kwargs) -> str:
         return "Cannot delete employee: no name provided."
 
     with get_db() as conn:
-        row = conn.execute("SELECT employee_id, name FROM employees WHERE LOWER(name) LIKE ?", (f"%{name.lower()}%",)).fetchone()
+        row = conn.execute("SELECT employee_id, name FROM employees WHERE LOWER(name) LIKE %s", (f"%{name.lower()}%",)).fetchone()
         if not row:
             return f"No employee found matching '{name}'."
-        conn.execute("DELETE FROM employees WHERE employee_id = ?", (row["employee_id"],))
+        conn.execute("DELETE FROM employees WHERE employee_id = %s", (row["employee_id"],))
     return f"Removed team member: {row['name']}"
