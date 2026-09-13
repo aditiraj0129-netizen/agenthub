@@ -1,4 +1,4 @@
-# AgentHub — Multi-Agent AI Platform
+AgentHub — A production-style multi-agents AI platform with guardrails, evaluation, and human-in-the-loop MCP tool approval
 
 A production-style multi-agent AI system built for a fictional 10-person startup, **Nimbus Solutions**. Instead of one general-purpose chatbot, three specialist agents each handle a different job with a model suited to that job — all sitting behind a shared, hardened pipeline that enforces security, validation, and observability identically no matter which agent is called.
 
@@ -10,12 +10,16 @@ A single generic LLM handling everything is the common student-project pattern. 
 Client (React dashboard)
 │ HTTPS + API key
 ▼
+
 Gateway (FastAPI) ── auth · rate limiting · request logging
 ▼
+
 Input Guardrail ── regex heuristics + local ML prompt-injection classifier
 ▼
+
 Orchestrator (LangGraph) ── routes by intent
 ▼
+
 ┌────────────┬──────────────────┬─────────────────┐
 ▼ ▼ ▼
 Receptionist Competitor Watcher MCP Tool Agent
@@ -24,11 +28,12 @@ rules engine) → diff → summarize) human-approval gate)
 │ │ │
 └────────────┴──────────────────┘
 ▼
+
 Output Guardrail ── PII redaction
 ▼
 SQLite ── employees · tasks · sites/snapshots · audit log · metrics · pipeline traces
 
-## The three agents
+The three agents
 
 | Agent | Model | Job |
 |---|---|---|
