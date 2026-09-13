@@ -35,7 +35,7 @@ def find_free_employee(department: str | None = None) -> dict | None:
         query = "SELECT * FROM employees WHERE status = 'free'"
         params = ()
         if department:
-            query += " AND department = ?"
+            query += " AND department = %s"
             params = (department,)
         query += " LIMIT 1"
         row = conn.execute(query, params).fetchone()
@@ -48,12 +48,12 @@ def assign_task(employee_id: str, requester_type: str, requester_name: str, desc
 
     with get_db() as conn:
         conn.execute(
-            "UPDATE employees SET status = 'busy', free_at = ? WHERE employee_id = ?",
+            "UPDATE employees SET status = 'busy', free_at = %s WHERE employee_id = %s",
             (free_at.isoformat(), employee_id),
         )
         cur = conn.execute(
             """INSERT INTO tasks (employee_id, requester_type, requester_name, description, status, expected_free_at)
-               VALUES (?, ?, ?, ?, 'in_progress', ?)""",
+               VALUES (%s, %s, %s, %s, 'in_progress', %s)""",
             (employee_id, requester_type, requester_name, description, free_at.isoformat()),
         )
         task_id = cur.lastrowid
@@ -72,17 +72,17 @@ def release_expired_employees() -> int:
     released = 0
     with get_db() as conn:
         expired = conn.execute(
-            "SELECT * FROM employees WHERE status = 'busy' AND free_at <= ?", (now,)
+            "SELECT * FROM employees WHERE status = 'busy' AND free_at <= %s", (now,)
         ).fetchall()
 
         for emp in expired:
             conn.execute(
-                "UPDATE employees SET status = 'free', free_at = NULL WHERE employee_id = ?",
+                "UPDATE employees SET status = 'free', free_at = NULL WHERE employee_id = %s",
                 (emp["employee_id"],),
             )
             conn.execute(
-                """UPDATE tasks SET status = 'completed', completed_at = ?
-                   WHERE employee_id = ? AND status = 'in_progress'""",
+                """UPDATE tasks SET status = 'completed', completed_at = %s
+                   WHERE employee_id = %s AND status = 'in_progress'""",
                 (now, emp["employee_id"]),
             )
             released += 1
