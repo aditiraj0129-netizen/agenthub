@@ -1,0 +1,15 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.6
+slowapi>=0.1.9
+pydantic>=2.9.2
+litellm>=1.55.0
+langgraph>=0.2.28
+langchain-core>=0.3.10
+chromadb>=0.5.15
+transformers>=4.44.2
+torch>=2.4.1
+sentence-transformers>=3.1.1
+ragas>=0.1.20
+python-dotenv>=1.0.1
+beautifulsoup4>=4.12.3
+apscheduler>=3.10.4

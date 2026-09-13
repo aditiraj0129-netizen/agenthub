@@ -1,0 +1,10 @@
+{
+  "openai": {
+    "url": "https://openai.com/pricing",
+    "last_report": "No meaningful changes were detected between the two snapshots. The pricing tiers, features, and messaging remain identical."
+  },
+  "anthropic": {
+    "url": "https://anthropic.com/pricing",
+    "last_report": "Nothing meaningful changed between the two snapshots."
+  }
+}
