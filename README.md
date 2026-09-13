@@ -7,6 +7,7 @@ A production-style multi-agent AI system built for a fictional 10-person startup
 A single generic LLM handling everything is the common student-project pattern. This project instead treats routing as an infrastructure problem: a request for "book a task" doesn't need the same model, latency budget, or trust level as a request that could delete data. Splitting agents by responsibility means each one can be tuned, evaluated, and secured independently — and the system can grow by adding agents, not by making one model do more things.
 
  Architecture
+ 
 Client (React dashboard)
 │ HTTPS + API key
 ▼
