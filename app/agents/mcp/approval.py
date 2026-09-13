@@ -38,7 +38,14 @@ def request_tool_call(tool_name: str, params: dict) -> dict:
     }
 
 
-def approve_call(approval_id: str) -> dict:
+import os
+APPROVAL_PASSWORD = os.getenv("APPROVAL_PASSWORD", "1234")  # demo-grade; swap for real auth in production
+
+
+def approve_call(approval_id: str, password: str = "") -> dict:
+    if password != APPROVAL_PASSWORD:
+        return {"status": "error", "message": "Incorrect approval password."}
+
     if approval_id not in _pending:
         return {"status": "error", "message": "No such pending approval (already run, rejected, or invalid ID)"}
 

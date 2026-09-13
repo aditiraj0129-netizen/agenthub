@@ -42,3 +42,38 @@ def delete_site_tracking(site_id: str = "", **kwargs) -> str:
     if delete_site(site_id):
         return f"Deleted tracking for '{site_id}'"
     return f"No such site: '{site_id}'"
+
+
+@register_tool("add_employee", is_write=True)
+def add_employee(name: str = "", department: str = "General", **kwargs) -> str:
+    from app.db.database import get_db
+    import re
+
+    if not name.strip():
+        return "Cannot add employee: no name provided."
+
+    employee_id = "emp_" + re.sub(r"[^a-z0-9]", "", name.lower())[:12]
+    with get_db() as conn:
+        existing = conn.execute("SELECT 1 FROM employees WHERE employee_id = ?", (employee_id,)).fetchone()
+        if existing:
+            return f"An employee with a similar ID already exists ('{employee_id}')."
+        conn.execute(
+            "INSERT INTO employees (employee_id, name, department, status, free_at) VALUES (?, ?, ?, 'free', NULL)",
+            (employee_id, name, department),
+        )
+    return f"Added new team member: {name} ({department})"
+
+
+@register_tool("delete_employee", is_write=True)
+def delete_employee(name: str = "", **kwargs) -> str:
+    from app.db.database import get_db
+
+    if not name.strip():
+        return "Cannot delete employee: no name provided."
+
+    with get_db() as conn:
+        row = conn.execute("SELECT employee_id, name FROM employees WHERE LOWER(name) LIKE ?", (f"%{name.lower()}%",)).fetchone()
+        if not row:
+            return f"No employee found matching '{name}'."
+        conn.execute("DELETE FROM employees WHERE employee_id = ?", (row["employee_id"],))
+    return f"Removed team member: {row['name']}"

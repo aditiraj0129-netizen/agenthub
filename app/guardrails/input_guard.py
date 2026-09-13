@@ -23,11 +23,24 @@ SUSPICIOUS_PATTERNS = [
 
 _compiled_patterns = [re.compile(p, re.IGNORECASE) for p in SUSPICIOUS_PATTERNS]
 
-# --- Layer 2: ML-based detector (loads once, reused for every request) ---
-_classifier = pipeline(
-    "text-classification",
-    model="protectai/deberta-v3-base-prompt-injection-v2",
-)
+# --- Layer 2: ML-based detector ---
+# Loaded LAZILY (on first actual use) instead of at import time. Loading at
+# import time blocks the whole app from starting — including binding the
+# port that Render/any host needs to see before it considers the service
+# "up". On a resource-limited free-tier host, downloading + loading this
+# model can take longer than the platform's startup timeout, causing a
+# failed deploy even though the app would have worked fine once loaded.
+_classifier = None
+
+
+def _get_classifier():
+    global _classifier
+    if _classifier is None:
+        _classifier = pipeline(
+            "text-classification",
+            model="protectai/deberta-v3-base-prompt-injection-v2",
+        )
+    return _classifier
 
 
 def check_input(user_text: str, max_length: int = 2000) -> dict:
@@ -46,7 +59,7 @@ def check_input(user_text: str, max_length: int = 2000) -> dict:
             return {"safe": False, "reason": f"Matched pattern: {pattern.pattern}", "risk_score": 1.0}
 
     # 2. ML classifier layer
-    result = _classifier(user_text[:512])[0]  # model has a token limit
+    result = _get_classifier()(user_text[:512])[0]  # model has a token limit
     is_injection = result["label"] == "INJECTION" and result["score"] > 0.85
 
     if is_injection:

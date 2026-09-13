@@ -6,7 +6,8 @@ employees (who's free/busy) and tasks (the work assignment log).
 import sqlite3
 from contextlib import contextmanager
 
-DB_PATH = "agenthub.db"
+import os
+DB_PATH = os.getenv("DB_PATH", "agenthub.db")  # on Render, set this to /data/agenthub.db (persistent disk mount)
 
 SEED_EMPLOYEES = [
     ("emp_01", "Riya Sharma", "Customer Support"),

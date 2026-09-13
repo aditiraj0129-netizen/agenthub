@@ -14,7 +14,11 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-API_KEY = "dev-secret-key-change-me"   # move this to .env in real deployment
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY", "dev-secret-key-change-me")
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="AgentHub Gateway")
@@ -129,9 +133,13 @@ def on_startup():
 from app.agents.mcp.approval import approve_call, reject_call, get_audit_log, get_pending
 
 
+class ApprovalRequest(BaseModel):
+    password: str
+
+
 @app.post("/mcp/approve/{approval_id}", dependencies=[Depends(verify_api_key)])
-def mcp_approve(approval_id: str):
-    return approve_call(approval_id)
+def mcp_approve(approval_id: str, body: ApprovalRequest):
+    return approve_call(approval_id, body.password)
 
 
 @app.post("/mcp/reject/{approval_id}", dependencies=[Depends(verify_api_key)])

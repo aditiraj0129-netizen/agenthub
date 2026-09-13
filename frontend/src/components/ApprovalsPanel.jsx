@@ -19,7 +19,13 @@ export default function ApprovalsPanel() {
   }, []);
 
   async function handleApprove(id) {
-    await api.approveCall(id);
+    const password = window.prompt("Enter approval password to confirm you're a known human:");
+    if (password === null) return; // user cancelled
+    const result = await api.approveCall(id, password);
+    if (result.status === "error") {
+      alert(result.message);
+      return;
+    }
     load();
   }
 

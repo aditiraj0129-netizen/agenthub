@@ -4,7 +4,9 @@ INTENT_KEYWORDS = {
                       "free employee", "who is free"],
     "competitor": ["competitor", "rival", "pricing page", "track", "watch site", "changes on"],
     "mcp": ["tool", "run the tool", "mcp", "execute", "approve", "notification", "notify",
-            "what time", "current time", "send a message", "delete", "remove tracking"],
+            "what time", "current time", "send a message", "delete", "remove tracking",
+            "add team member", "add employee", "new team member", "hire", "remove team member",
+            "delete employee", "fire", "remove employee"],
 }
 
 
