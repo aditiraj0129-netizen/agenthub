@@ -8,7 +8,10 @@ Two layers of defense, cheapest check first (fail fast):
            — catches sneaky/reworded injection attempts
 """
 import re
-from transformers import pipeline
+# transformers is NOT imported at module level anymore — importing it alone
+# (before even loading a model) pulls in a large chunk of memory. On a
+# 512MB-RAM host, that import happening at startup for every agent's module
+# chain was enough to OOM the whole app before it could even bind a port.
 
 # --- Layer 1: fast heuristic patterns ---
 SUSPICIOUS_PATTERNS = [
@@ -36,6 +39,7 @@ _classifier = None
 def _get_classifier():
     global _classifier
     if _classifier is None:
+        from transformers import pipeline  # imported here, only on first real use
         _classifier = pipeline(
             "text-classification",
             model="protectai/deberta-v3-base-prompt-injection-v2",

@@ -15,7 +15,6 @@ botocore==1.43.93
 build==1.6.1
 certifi==2026.7.22
 charset-normalizer==3.5.1
-chromadb==1.5.9
 click==8.5.0
 cloudpickle==3.1.2
 dataclasses-json==0.6.7
@@ -124,7 +123,6 @@ safetensors==0.8.0
 scikit-learn==1.9.1
 scikit-network==0.33.5
 scipy==1.18.1
-sentence-transformers==6.0.1
 setuptools==84.0.0
 shellingham==1.5.4
 six==1.17.0
