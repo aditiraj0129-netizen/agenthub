@@ -1,4 +1,5 @@
 AgentHub — A production-style multi-agents AI platform with guardrails, evaluation, and human-in-the-loop MCP tool approval
+LIVE DEMO:https://lnkd.in/p/gb3nBGMj
 
 A production-style multi-agent AI system built for a fictional 10-person startup, **Nimbus Solutions**. Instead of one general-purpose chatbot, three specialist agents each handle a different job with a model suited to that job — all sitting behind a shared, hardened pipeline that enforces security, validation, and observability identically no matter which agent is called.
 
