@@ -5,8 +5,10 @@ INTENT_KEYWORDS = {
     "competitor": ["competitor", "rival", "pricing page", "track", "watch site", "changes on"],
     "mcp": ["tool", "run the tool", "mcp", "execute", "approve", "notification", "notify",
             "what time", "current time", "send a message", "delete", "remove tracking",
-            "add team member", "add employee", "new team member", "hire", "remove team member",
-            "delete employee", "fire", "remove employee"],
+            "add team member", "add employee", "new team member", "remove team member",
+            "delete employee", "remove employee"],
+    "onboarding": ["onboard", "new hire", "buddy", "welcome", "starting today", "joining the team"],
+    "invoice": ["invoice", "payment reminder", "follow up on payment", "overdue payment", "billing email"],
 }
 
 

@@ -69,4 +69,19 @@ def check_input(user_text: str, max_length: int = 2000) -> dict:
     if is_injection:
         return {"safe": False, "reason": "ML classifier flagged injection", "risk_score": result["score"]}
 
+    # Layer 3: NeMo Guardrails second opinion — LOCAL DEVELOPMENT ONLY.
+    # Gated behind an env flag rather than always running, because
+    # nemoguardrails' dependency weight caused repeated OOM crashes on
+    # Render's free 512MB tier. Rather than keep fighting that limit for
+    # a third defense layer, this stays available locally (where it works
+    # and can be demoed) and is explicitly disabled in production — a
+    # deliberate scope decision, not a bug: knowing which environment can
+    # support which dependencies is itself part of shipping responsibly.
+    import os
+    if os.getenv("ENABLE_NEMO_GUARDRAILS", "false").lower() == "true":
+        from app.guardrails.nemo_guard import nemo_check_input
+        nemo_result = nemo_check_input(user_text)
+        if not nemo_result["safe"]:
+            return {"safe": False, "reason": nemo_result["reason"], "risk_score": 0.9}
+
     return {"safe": True, "reason": "clean", "risk_score": result["score"] if result["label"] == "INJECTION" else 0.0}

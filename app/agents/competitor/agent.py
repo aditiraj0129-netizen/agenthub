@@ -10,6 +10,7 @@ from datetime import datetime
 import litellm
 from dotenv import load_dotenv
 from app.agents.competitor.crawler import fetch_page_text, chunk_text
+from app.guardrails.content_sanitizer import sanitize_external_content
 from app.agents.competitor.store import save_snapshot, get_latest_two_snapshots
 from app.agents.competitor.registry import list_sites, find_site_by_mention, update_last_report
 import asyncio
@@ -35,6 +36,7 @@ load_dotenv()
 
 def track_site(site_id: str, url: str) -> str:
     text = fetch_page_text(url)
+    text = sanitize_external_content(text, source_label=f"crawled page ({url})")
     chunks = chunk_text(text)
     timestamp = datetime.utcnow().isoformat()
 

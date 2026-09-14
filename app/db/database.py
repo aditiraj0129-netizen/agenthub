@@ -7,12 +7,21 @@ underlying engine is now a real persistent managed database.
 import os
 import psycopg2
 import psycopg2.extras
+import psycopg2.pool
 from contextlib import contextmanager
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Connection pool: keeps a handful of connections open and reuses them,
+# instead of paying a fresh network + TLS handshake to Supabase on every
+# single query. This is what actually fixed the ~9 second response times —
+# each new connection was costing hundreds of milliseconds before the
+# query even started, and every dashboard panel polling every few seconds
+# multiplied that cost badly.
+_pool = psycopg2.pool.SimpleConnectionPool(1, 10, DATABASE_URL)
 
 SEED_EMPLOYEES = [
     ("emp_01", "Riya Sharma", "Customer Support"),
@@ -54,7 +63,7 @@ class ConnWrapper:
 
 
 def init_db():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = _pool.getconn()
     cur = conn.cursor()
 
     cur.execute("""
@@ -142,15 +151,15 @@ def init_db():
 
     conn.commit()
     cur.close()
-    conn.close()
+    _pool.putconn(conn)
 
 
 @contextmanager
 def get_db():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = _pool.getconn()
     wrapper = ConnWrapper(conn)
     try:
         yield wrapper
         conn.commit()
     finally:
-        conn.close()
+        _pool.putconn(conn)  # returns the connection to the pool instead of closing it

@@ -1,0 +1,18 @@
+# NeMo Guardrails config. Uses the same Groq model already configured for
+# the rest of the system — no new API key needed. This runs as an
+# INDEPENDENT second opinion alongside our regex + local ML classifier,
+# not a replacement: different techniques catch different attack styles,
+# and defense-in-depth means an attacker has to beat all three layers,
+# not just one.
+models:
+  - type: main
+    engine: groq
+    model: openai/gpt-oss-20b
+
+rails:
+  input:
+    flows:
+      - self check input
+  output:
+    flows:
+      - self check output
