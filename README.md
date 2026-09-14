@@ -52,7 +52,8 @@ Model choice is intentionally different per agent and set via `.env`, not hardco
 
 Security & robustness
 
-- Three-layer prompt-injection defense**: instant regex heuristics catch obvious attacks, a local ML classifier (`protectai/deberta-v3-base-prompt-injection-v2`) catches reworded/subtle ones, and (in local development) NVIDIA NeMo Guardrails adds an LLM-reasoning-based check for attacks that evade pattern matching entirely. NeMo is gated behind `ENABLE_NEMO_GUARDRAILS` and runs locally only — its dependency footprint exceeded what Render's free 512MB tier could hold at runtime, a deliberate, documented scope tradeoff rather than an oversight.
+- Three-layer prompt-injection defense**: instant regex heuristics catch obvious attacks, a local ML classifier (`protectai/deberta-v3-base-prompt-injection-v2`) catches reworded/subtle ones, and (in local development) NVIDIA NeMo Guardrails adds an LLM-reasoning-based check for attacks that evade pattern matching entirely.
+- NeMo is gated behind `ENABLE_NEMO_GUARDRAILS` and runs locally only — its dependency footprint exceeded what Render's free 512MB tier could hold at runtime, a deliberate, documented scope tradeoff rather than an oversight.
 - **Indirect injection defense**: content pulled from outside the system (crawled competitor pages) is sanitized for injection markers before it's ever inserted into an LLM prompt — the same defense the input guardrail applies to user messages, applied to the *other* place untrusted text enters the system.
 - **Output guardrail**: every agent response passes through PII redaction before reaching the user.
 - **API-key auth + rate limiting** on every endpoint via the gateway.
